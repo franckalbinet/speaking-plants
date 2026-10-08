@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "speaking-plants"
+dynamic = ["version"]
+description = "Detecting water stress in coffee plants with IoT sensors: thermal cameras, soil moisture and relative humidity"
+readme = "README.md"
+requires-python = ">=3.13"
+license = "Apache-2.0"
+authors = [{name = "Franck Albinet", email = "franckalbinet@gmail.com"}]
+keywords = ['nbdev']
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+]
+dependencies = ["nbdev>=3.3.25"]
+
+[project.urls]
+Repository = "https://github.com/franckalbinet/speaking-plants"
+Documentation = "https://franckalbinet.github.io/speaking-plants/"
+
+[project.entry-points.nbdev]
+speaking_plants = "speaking_plants._modidx:d"
+
+[tool.setuptools.dynamic]
+version = {attr = "speaking_plants.__version__"}
+
+[tool.setuptools.packages.find]
+include = ["speaking_plants"]
+
+[dependency-groups]
+dev = ["ipykernel>=7.4.0"]
+
+[tool.nbdev]

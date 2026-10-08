@@ -1,0 +1,14 @@
+project:
+  output-dir: _docs
+
+website:
+  title: "speaking-plants"
+  site-url: "https://franckalbinet.github.io/speaking-plants"
+  description: "Detecting water stress in coffee plants with IoT sensors: thermal cameras, soil moisture and relative humidity"
+  repo-branch: main
+  repo-url: "https://github.com/franckalbinet/speaking-plants"
+
+format-links:
+  - html
+  - format: commonmark
+    text: Markdown
