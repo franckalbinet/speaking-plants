@@ -1,0 +1,8 @@
+website:
+  sidebar:
+    contents:
+      - text: "Overview"
+        href: index.ipynb
+      - section: "API reference"
+        contents:
+          - 00_clean.ipynb

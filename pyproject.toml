@@ -38,3 +38,4 @@ include = ["speaking_plants"]
 dev = ["ipykernel>=7.4.0"]
 
 [tool.nbdev]
+custom_sidebar = true
