@@ -1,6 +1,7 @@
 _docs/
 _proc/
 data/
+scratch/
 
 *.bak
 .gitattributes

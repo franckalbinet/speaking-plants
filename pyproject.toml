@@ -15,7 +15,11 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
 ]
-dependencies = ["nbdev>=3.3.25"]
+dependencies = [
+    "matplotlib>=3.11.2",
+    "nbdev>=3.3.25",
+    "pandas>=3.0.6",
+]
 
 [project.urls]
 Repository = "https://github.com/franckalbinet/speaking-plants"
