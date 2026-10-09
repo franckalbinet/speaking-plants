@@ -6,7 +6,7 @@ Docs: https://franckalbinet.github.io/speaking-plants/clean.html.md"""
 
 # %% auto #0
 __all__ = ['ruuvi_cols', 'soil_cols', 'leaf_cols', 'px_cols', 'id_cols', 'schema', 'raw_id_cols', 'common', 'layouts', 'limits',
-           'read_log', 'read_logs', 'clean', 'frames', 'qc_report', 'find_gaps']
+           'read_log', 'read_logs', 'clean', 'measurements', 'frames', 'qc_report', 'find_gaps']
 
 # %% ../nbs/00_clean.ipynb #49706bda
 import numpy as np, pandas as pd
@@ -61,6 +61,7 @@ def read_logs(
 limits = dict(pixel=(0, 60), soil_moisture=(0, 100), soil_temperature=(0, 60))
 
 # %% ../nbs/00_clean.ipynb #441a987e
+def _leaf(p): return pd.DataFrame(dict(leaf_temp_mean=p.mean(axis=1), leaf_temp_max=p.max(axis=1), leaf_temp_min=p.min(axis=1)))
 def clean(
     df:pd.DataFrame, # Output of `read_logs`
     limits:dict=limits, # Open interval of plausible values per measurement
@@ -69,15 +70,27 @@ def clean(
     bad = lambda x, k: (x <= limits[k][0]) | (x >= limits[k][1])
     p = df[px_cols].mask(bad(df[px_cols], 'pixel'))
     soil = pd.DataFrame({c: df[c].mask(bad(df[c], c)) for c in soil_cols})
-    leaf = pd.DataFrame(dict(leaf_temp_mean=p.mean(axis=1), leaf_temp_max=p.max(axis=1), leaf_temp_min=p.min(axis=1)))
+    leaf = _leaf(p)
     n_bad_px = (p.isna() & df[px_cols].notna()).sum(axis=1)
     soil_lost = (soil.isna() & df[soil_cols].notna()).any(axis=1)
     qc = pd.DataFrame(dict(qc_bad_px=n_bad_px, qc_soil=soil_lost))
     return pd.concat([df[id_cols + ruuvi_cols], soil, leaf, qc, p], axis=1)
 
+# %% ../nbs/00_clean.ipynb #d2e61347
+def measurements(
+    df:pd.DataFrame, # Output of `clean`
+)->pd.DataFrame: # One row per node and time, with the median image of the burst
+    "Combine each burst of frames into one measurement"
+    g = df.groupby(['node_id', 'time'])
+    p = g[px_cols].median()
+    ids = g[['timestamp', 'measurement_id']].first().assign(n_frames=g.size())
+    env = g[ruuvi_cols + soil_cols].median()
+    qc = g.agg(qc_bad_px=('qc_bad_px', 'sum'), qc_soil=('qc_soil', 'any'))
+    return pd.concat([ids, env, _leaf(p), qc, p], axis=1).reset_index()
+
 # %% ../nbs/00_clean.ipynb #c691acbc
 def frames(
-    df:pd.DataFrame, # Rows of `read_logs` or `clean` output
+    df:pd.DataFrame, # Rows of `read_logs`, `clean` or `measurements` output
 )->np.ndarray: # Shape `(len(df), 24, 32)`, one thermal image per row
     "Thermal images of the frames in `df`"
     return df[px_cols].to_numpy().reshape(-1, 24, 32)
