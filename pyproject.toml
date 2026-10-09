@@ -16,9 +16,11 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
 ]
 dependencies = [
+    "astral>=3.2",
     "matplotlib>=3.11.2",
     "nbdev>=3.3.25",
     "pandas>=3.0.6",
+    "scipy>=1.18.1",
 ]
 
 [project.urls]

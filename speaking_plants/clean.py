@@ -6,7 +6,7 @@ Docs: https://franckalbinet.github.io/speaking-plants/clean.html.md"""
 
 # %% auto #0
 __all__ = ['ruuvi_cols', 'soil_cols', 'leaf_cols', 'px_cols', 'id_cols', 'schema', 'raw_id_cols', 'common', 'layouts', 'limits',
-           'read_log', 'read_logs', 'clean', 'measurements', 'frames', 'qc_report', 'find_gaps']
+           'read_log', 'read_logs', 'clean', 'measurements', 'share_ruuvi', 'frames', 'qc_report', 'find_gaps']
 
 # %% ../nbs/00_clean.ipynb #49706bda
 import numpy as np, pandas as pd
@@ -87,6 +87,19 @@ def measurements(
     env = g[ruuvi_cols + soil_cols].median()
     qc = g.agg(qc_bad_px=('qc_bad_px', 'sum'), qc_soil=('qc_soil', 'any'))
     return pd.concat([ids, env, _leaf(p), qc, p], axis=1).reset_index()
+
+# %% ../nbs/00_clean.ipynb #f7a527da
+def share_ruuvi(
+    df:pd.DataFrame, # Output of `clean` or `measurements`
+    source:str='SP_01', # Node with the Ruuvi sensor
+    tolerance:str='150s', # Largest time difference to the matched reading
+)->pd.DataFrame: # Same rows, with the source node's Ruuvi readings on every node
+    "Copy the Ruuvi readings of `source` to every node, matched by time"
+    src = df.loc[df.node_id == source, ['time'] + ruuvi_cols].dropna().rename(columns={'time': 't_src'})
+    s = df[['time']].sort_values('time')
+    m = pd.merge_asof(s, src, left_on='time', right_on='t_src', direction='nearest', tolerance=pd.Timedelta(tolerance))
+    m.index = s.index
+    return df.assign(**{c: m[c] for c in ruuvi_cols})
 
 # %% ../nbs/00_clean.ipynb #c691acbc
 def frames(

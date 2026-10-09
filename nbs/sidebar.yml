@@ -6,3 +6,5 @@ website:
       - section: "API reference"
         contents:
           - 00_clean.ipynb
+          - 01_leaf.ipynb
+          - 02_environment.ipynb
