@@ -1,0 +1,1412 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Read microcontroller SD-card logs into one flat, quality-flagged DataFrame">
+
+<title>Clean – speaking-plants</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-cbed26e0df856eae0d97ab8ae9893fbb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Clean – speaking-plants">
+<meta property="og:description" content="Read microcontroller SD-card logs into one flat, quality-flagged DataFrame">
+<meta property="og:image" content="https://franckalbinet.github.io/speaking-plants/00_clean_files/figure-html/cell-15-output-1.png">
+<meta property="og:site_name" content="speaking-plants">
+<meta property="og:image:height" content="486">
+<meta property="og:image:width" content="2520">
+<meta name="twitter:title" content="Clean – speaking-plants">
+<meta name="twitter:description" content="Read microcontroller SD-card logs into one flat, quality-flagged DataFrame">
+<meta name="twitter:image" content="https://franckalbinet.github.io/speaking-plants/00_clean_files/figure-html/cell-15-output-1.png">
+<meta name="twitter:image-height" content="486">
+<meta name="twitter:image-width" content="2520">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">speaking-plants</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./clean.html">API reference</a></li><li class="breadcrumb-item"><a href="./clean.html">Clean</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">API reference</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clean.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Clean</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./leaf.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Leaf temperature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./environment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Environment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./logbook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logbook</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Batches</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./batches/b02/diagnosis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Batch 2: water stress diagnosis</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#reading-one-log" id="toc-reading-one-log" class="nav-link active" data-scroll-target="#reading-one-log">Reading one log</a></li>
+  <li><a href="#all-logs-in-one-table" id="toc-all-logs-in-one-table" class="nav-link" data-scroll-target="#all-logs-in-one-table">All logs in one table</a></li>
+  <li><a href="#quality-flags" id="toc-quality-flags" class="nav-link" data-scroll-target="#quality-flags">Quality flags</a></li>
+  <li><a href="#one-row-per-measurement" id="toc-one-row-per-measurement" class="nav-link" data-scroll-target="#one-row-per-measurement">One row per measurement</a></li>
+  <li><a href="#air-readings-for-every-node" id="toc-air-readings-for-every-node" class="nav-link" data-scroll-target="#air-readings-for-every-node">Air readings for every node</a></li>
+  <li><a href="#thermal-images" id="toc-thermal-images" class="nav-link" data-scroll-target="#thermal-images">Thermal images</a></li>
+  <li><a href="#quality-report" id="toc-quality-report" class="nav-link" data-scroll-target="#quality-report">Quality report</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/franckalbinet/speaking-plants/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="clean.html.md"><i class="bi bi-file-code"></i>Markdown</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./clean.html">API reference</a></li><li class="breadcrumb-item"><a href="./clean.html">Clean</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Clean</h1>
+</div>
+
+<div>
+  <div class="description">
+    Read microcontroller SD-card logs into one flat, quality-flagged DataFrame
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>Each sensor node (<code>SP_01</code>, <code>SP_02</code>, …) writes a CSV log to its SD card. A row is one thermal frame: 768 pixel temperatures from the 32 × 24 MLX90640 camera, plus the soil readings and, on <code>SP_01</code> only, the Ruuvi air sensor. Logs from different nodes differ in format and carry sensor faults, and future batches will too.</p>
+<p>This module turns any set of logs into one DataFrame with a fixed schema, one row per frame, sorted by node and time. Faulty values are set to missing and flagged, never dropped: the raw logs stay the reference, and each analysis decides what to exclude.</p>
+<div id="ce5b4bbd" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:06.356693+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:06.358033+00:00&quot;,&quot;total&quot;:0.00134477900002139}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.test <span class="im">import</span> <span class="op">*</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="reading-one-log" class="level2">
+<h2 class="anchored" data-anchor-id="reading-one-log">Reading one log</h2>
+<p>A log’s columns fall into five groups. The schema below fixes their names and order for every node:</p>
+<p>The logger writes the date and time as text next to the Unix timestamp, and the Ruuvi columns only when the firmware expects that sensor. So a raw line has one of two layouts, told apart by their field count:</p>
+<div id="f3184431" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:06.365531+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:06.441729+00:00&quot;,&quot;total&quot;:0.07620364899997867}}" data-execution_count="6">
+<hr>
+<section id="read_log" class="level3">
+<h3 class="anchored" data-anchor-id="read_log">read_log</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_log(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    path, <span class="co"># CSV log written by one node</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># One row per frame, columns in `schema` order, sorted by time and frame</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Read one node’s log into the common schema</em></p>
+</section>
+</div>
+<p>A log is not one table. The logger appends lines, and a single file can mix formats: <code>SP_02</code> switches from <code>;</code> to <code>,</code> delimiters across an outage in late September, and its first ten lines after the switch use <code>SP_01</code>’s Ruuvi layout. So <code>read_log</code> splits each line on its own delimiter and picks the column layout from its field count. A field count matching no known layout raises an error: a new firmware format should be noticed, not guessed.</p>
+<p>Beyond that, <code>read_log</code> strips the leading space from <code>node_id</code>, adds the Ruuvi columns as missing for nodes without that sensor, and turns the <code>-999</code> the logger writes for “no reading” into missing values.</p>
+<p><code>time</code> comes from the Unix <code>timestamp</code>, which encodes Austrian local time (it converts to the same wall-clock time the logger writes in its <code>date</code> and <code>time</code> columns). Those two text columns are dropped: they repeat <code>timestamp</code>, in a format that varies even within one file (<code>2026-09-23</code> versus <code>23/09/2026</code>).</p>
+<div id="8359b43d" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> Path(<span class="st">'../data/b01'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>sp2 <span class="op">=</span> read_log(data<span class="op">/</span><span class="st">'dados_SP_02.csv'</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>sp2.iloc[:<span class="dv">3</span>, :<span class="dv">12</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">node_id</th>
+<th data-quarto-table-cell-role="th">time</th>
+<th data-quarto-table-cell-role="th">timestamp</th>
+<th data-quarto-table-cell-role="th">measurement_id</th>
+<th data-quarto-table-cell-role="th">frame</th>
+<th data-quarto-table-cell-role="th">ruuvi_temp</th>
+<th data-quarto-table-cell-role="th">ruuvi_humidity</th>
+<th data-quarto-table-cell-role="th">ruuvi_pressure</th>
+<th data-quarto-table-cell-role="th">soil_moisture</th>
+<th data-quarto-table-cell-role="th">soil_temperature</th>
+<th data-quarto-table-cell-role="th">leaf_temp_mean</th>
+<th data-quarto-table-cell-role="th">leaf_temp_max</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>SP_02</td>
+<td>2026-09-23 11:49:21</td>
+<td>1790164161</td>
+<td>5967213</td>
+<td>1</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>24.5</td>
+<td>22.5</td>
+<td>26.02</td>
+<td>31.39</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>SP_02</td>
+<td>2026-09-23 11:49:21</td>
+<td>1790164161</td>
+<td>5967213</td>
+<td>2</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>24.5</td>
+<td>22.5</td>
+<td>25.98</td>
+<td>31.73</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>SP_02</td>
+<td>2026-09-23 11:49:21</td>
+<td>1790164161</td>
+<td>5967213</td>
+<td>3</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>24.5</td>
+<td>22.5</td>
+<td>26.09</td>
+<td>31.12</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="all-logs-in-one-table" class="level2">
+<h2 class="anchored" data-anchor-id="all-logs-in-one-table">All logs in one table</h2>
+<div id="9f5fd4c9" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:06.443295+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:06.445912+00:00&quot;,&quot;total&quot;:0.0026202820000094107}}" data-execution_count="8">
+<hr>
+<section id="read_logs" class="level3">
+<h3 class="anchored" data-anchor-id="read_logs">read_logs</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> read_logs(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    paths, <span class="co"># CSV logs, one or more per node</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># One row per frame for all nodes, sorted by node, time and frame</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Read logs from all nodes into one table</em></p>
+</section>
+</div>
+<p>A node may leave several logs, for instance one per SD-card import, so <code>read_logs</code> takes any list of paths:</p>
+<div id="819b03c7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> read_logs(<span class="bu">sorted</span>(data.glob(<span class="st">'dados_*.csv'</span>)))</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>df.groupby(<span class="st">'node_id'</span>).time.agg([<span class="st">'count'</span>, <span class="st">'min'</span>, <span class="st">'max'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">count</th>
+<th data-quarto-table-cell-role="th">min</th>
+<th data-quarto-table-cell-role="th">max</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">node_id</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">SP_01</th>
+<td>9159</td>
+<td>2026-09-23 11:58:45</td>
+<td>2026-10-05 16:45:00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">SP_02</th>
+<td>12185</td>
+<td>2026-09-23 11:49:21</td>
+<td>2026-10-05 16:50:00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">SP_03</th>
+<td>9991</td>
+<td>2026-09-23 11:42:19</td>
+<td>2026-10-05 16:50:00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">SP_04</th>
+<td>14170</td>
+<td>2026-09-23 11:37:37</td>
+<td>2026-10-05 16:45:00</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="quality-flags" class="level2">
+<h2 class="anchored" data-anchor-id="quality-flags">Quality flags</h2>
+<p>Sensors sometimes return values no plant or soil can have: a pixel at 877 °C or −253 °C after a faulty camera read, or a soil moisture of exactly 0 when the probe drops out. <code>limits</code> holds the open interval of plausible values for each measurement:</p>
+<div id="1e35ac52" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:06.448717+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:06.451823+00:00&quot;,&quot;total&quot;:0.0031094610000081957}}" data-execution_count="11">
+<hr>
+<section id="clean" class="level3">
+<h3 class="anchored" data-anchor-id="clean">clean</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> clean(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `read_logs`</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    limits:<span class="bu">dict</span><span class="op">=</span>{<span class="st">'pixel'</span>: (<span class="dv">0</span>, <span class="dv">60</span>), <span class="st">'soil_moisture'</span>: (<span class="dv">0</span>, <span class="dv">100</span>), <span class="st">'soil_temperature'</span>: (<span class="dv">0</span>, <span class="dv">60</span>)}, <span class="co"># Open interval of plausible values per measurement</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># Same rows, implausible values missing, with `qc_*` flag columns</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Set implausible values to missing, flag them, and recompute leaf summaries from the remaining pixels</em></p>
+</section>
+</div>
+<p><code>clean</code> keeps every row. A value outside its limits becomes missing, and a flag column records that it was there: <code>qc_bad_px</code> counts the pixels removed from each frame, and <code>qc_soil</code> marks rows that lost a soil reading. Values the logger never had (its <code>-999</code>) are simply missing, without a flag. The leaf summaries are recomputed from the remaining pixels, since the logger’s own summaries include the faulty ones: a single 877 °C pixel would otherwise set <code>leaf_temp_max</code>.</p>
+<div id="f017b176" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cdf <span class="op">=</span> clean(df)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cdf.groupby(<span class="st">'node_id'</span>)[[<span class="st">'qc_bad_px'</span>, <span class="st">'qc_soil'</span>]].agg(<span class="kw">lambda</span> s: (s <span class="op">&gt;</span> <span class="dv">0</span>).<span class="bu">sum</span>())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">qc_bad_px</th>
+<th data-quarto-table-cell-role="th">qc_soil</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">node_id</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">SP_01</th>
+<td>22</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">SP_02</th>
+<td>150</td>
+<td>0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">SP_03</th>
+<td>212</td>
+<td>0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">SP_04</th>
+<td>109</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p>The raw maximum leaf temperature reaches several hundred degrees; after cleaning, it stays within the limits:</p>
+<div id="76d41964" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>test_eq(cdf.leaf_temp_max.<span class="bu">max</span>() <span class="op">&lt;</span> limits[<span class="st">'pixel'</span>][<span class="dv">1</span>], <span class="va">True</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>df.leaf_temp_max.<span class="bu">max</span>(), cdf.leaf_temp_max.<span class="bu">max</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>(np.float64(877.1), np.float64(59.99))</code></pre>
+</div>
+</div>
+</section>
+<section id="one-row-per-measurement" class="level2">
+<h2 class="anchored" data-anchor-id="one-row-per-measurement">One row per measurement</h2>
+<p>Every 5 minutes, a node takes a burst of usually 5 frames within one second. All frames in a burst share <code>measurement_id</code> and <code>time</code>. The firmware reads the soil and Ruuvi sensors once per burst, so each frame’s row repeats the same values. The pixels differ by about 0.3 °C from frame to frame, which looks like camera noise.</p>
+<p><code>measurements</code> combines each burst into one row. Each pixel becomes its median across the burst’s frames, so one faulty frame doesn’t move the result. Run it after <code>clean</code>, so pixels outside the limits are already missing and don’t count.</p>
+<div id="703081fa" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:06.453240+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:06.455828+00:00&quot;,&quot;total&quot;:0.0025912389999689367}}" data-execution_count="13">
+<hr>
+<section id="measurements" class="level3">
+<h3 class="anchored" data-anchor-id="measurements">measurements</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> measurements(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `clean`</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># One row per node and time, with the median image of the burst</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Combine each burst of frames into one measurement</em></p>
+</section>
+</div>
+<p><code>n_frames</code> counts the frames in the burst. The leaf summaries are recomputed from the median image. <code>qc_bad_px</code> is the number of pixel readings removed from the whole burst, and <code>qc_soil</code> is true if any frame lost a soil reading. In batch 1, each frame with no valid pixel sits in a burst with good frames, so every measurement has an image:</p>
+<div id="011098fc" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>mdf <span class="op">=</span> measurements(cdf)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>test_eq(mdf[px_cols].isna().<span class="bu">all</span>(axis<span class="op">=</span><span class="dv">1</span>).<span class="bu">sum</span>(), <span class="dv">0</span>)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>mdf.groupby(<span class="st">'node_id'</span>).n_frames.value_counts().unstack(fill_value<span class="op">=</span><span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">n_frames</th>
+<th data-quarto-table-cell-role="th">2</th>
+<th data-quarto-table-cell-role="th">4</th>
+<th data-quarto-table-cell-role="th">5</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">node_id</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">SP_01</th>
+<td>0</td>
+<td>1</td>
+<td>1831</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">SP_02</th>
+<td>0</td>
+<td>0</td>
+<td>2437</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">SP_03</th>
+<td>1</td>
+<td>1</td>
+<td>1997</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">SP_04</th>
+<td>0</td>
+<td>0</td>
+<td>2834</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="air-readings-for-every-node" class="level2">
+<h2 class="anchored" data-anchor-id="air-readings-for-every-node">Air readings for every node</h2>
+<p>The nodes share one greenhouse, and the single Ruuvi sensor is wired to <code>SP_01</code>. Its air temperature, humidity and pressure therefore apply to every plant, and leaf minus air temperature is a key input to the crop water stress index. <code>share_ruuvi</code> copies the <code>source</code> node’s Ruuvi readings to every node. It matches each row to the nearest valid reading in time, within <code>tolerance</code>. The node clocks agree to about a second, so half of the 5-minute step is a safe tolerance. A row with no reading within <code>tolerance</code>, for instance during an outage of <code>SP_01</code>, gets missing values.</p>
+<div id="0327619a" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:06.457253+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:06.459958+00:00&quot;,&quot;total&quot;:0.0027068830000303024}}" data-execution_count="15">
+<hr>
+<section id="share_ruuvi" class="level3">
+<h3 class="anchored" data-anchor-id="share_ruuvi">share_ruuvi</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> share_ruuvi(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `clean` or `measurements`</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    source:<span class="bu">str</span><span class="op">=</span><span class="st">'SP_01'</span>, <span class="co"># Node with the Ruuvi sensor</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    tolerance:<span class="bu">str</span><span class="op">=</span><span class="st">'150s'</span>, <span class="co"># Largest time difference to the matched reading</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># Same rows, with the source node's Ruuvi readings on every node</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Copy the Ruuvi readings of <code>source</code> to every node, matched by time</em></p>
+</section>
+</div>
+<p>Share of measurements with an air temperature, per node. Outside the outages of <code>SP_01</code>, every node has one:</p>
+<div id="fae9fa23" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>mdf <span class="op">=</span> share_ruuvi(mdf)</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mdf.groupby(<span class="st">'node_id'</span>).ruuvi_temp.<span class="bu">apply</span>(<span class="kw">lambda</span> s: s.notna().mean()).<span class="bu">round</span>(<span class="dv">2</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<pre><code>node_id
+SP_01    0.85
+SP_02    0.58
+SP_03    0.71
+SP_04    0.51
+Name: ruuvi_temp, dtype: float64</code></pre>
+</div>
+</div>
+</section>
+<section id="thermal-images" class="level2">
+<h2 class="anchored" data-anchor-id="thermal-images">Thermal images</h2>
+<div id="f47cfaf7" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:06.460923+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:06.463214+00:00&quot;,&quot;total&quot;:0.0022947620000195457}}" data-execution_count="17">
+<hr>
+<section id="frames" class="level3">
+<h3 class="anchored" data-anchor-id="frames">frames</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> frames(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Rows of `read_logs`, `clean` or `measurements` output</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>numpy.ndarray: <span class="co"># Shape `(len(df), 24, 32)`, one thermal image per row</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Thermal images of the frames in <code>df</code></em></p>
+</section>
+</div>
+<p>Each row’s 768 pixels are one 24 × 32 image, stored row by row. <code>frames</code> reshapes them, so any selection of rows, by node, time or flag, gives an image stack. Here is the first frame of each node:</p>
+<div id="ed625d3e" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>first <span class="op">=</span> cdf.groupby(<span class="st">'node_id'</span>).head(<span class="dv">1</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>fig, axs <span class="op">=</span> plt.subplots(<span class="dv">1</span>, <span class="bu">len</span>(first), figsize<span class="op">=</span>(<span class="dv">16</span>, <span class="dv">3</span>))</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> ax, im, node <span class="kw">in</span> <span class="bu">zip</span>(axs, frames(first), first.node_id):</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>    ax.imshow(im, cmap<span class="op">=</span><span class="st">'inferno'</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    ax.set_title(node)</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    ax.axis(<span class="st">'off'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="00_clean_files/figure-html/cell-15-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="quality-report" class="level2">
+<h2 class="anchored" data-anchor-id="quality-report">Quality report</h2>
+<div id="a76efcc6" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:06.465151+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:06.468203+00:00&quot;,&quot;total&quot;:0.003055640000013682}}" data-execution_count="19">
+<hr>
+<section id="qc_report" class="level3">
+<h3 class="anchored" data-anchor-id="qc_report">qc_report</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> qc_report(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `clean`</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    max_step:<span class="bu">str</span><span class="op">=</span><span class="st">'15min'</span>, <span class="co"># Longest expected interval between measurements</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># One row per node</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Per-node summary of coverage, gaps and quality flags</em></p>
+</section>
+</div>
+<p><code>qc_report</code> summarises a batch per node: its time span, the number of gaps longer than <code>max_step</code>, the share of rows with each environmental reading, and the frames and rows affected by the quality flags. <code>frames_no_px</code> counts frames with no valid pixel left, either because the camera returned nothing or because every pixel was implausible.</p>
+<div id="83358ed9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>rep <span class="op">=</span> qc_report(cdf)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>rep.T</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">node_id</th>
+<th data-quarto-table-cell-role="th">SP_01</th>
+<th data-quarto-table-cell-role="th">SP_02</th>
+<th data-quarto-table-cell-role="th">SP_03</th>
+<th data-quarto-table-cell-role="th">SP_04</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">frames</th>
+<td>9159</td>
+<td>12185</td>
+<td>9991</td>
+<td>14170</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">measurements</th>
+<td>1832</td>
+<td>2437</td>
+<td>1999</td>
+<td>2834</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">first</th>
+<td>2026-09-23 11:58:45</td>
+<td>2026-09-23 11:49:21</td>
+<td>2026-09-23 11:42:19</td>
+<td>2026-09-23 11:37:37</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">last</th>
+<td>2026-10-05 16:45:00</td>
+<td>2026-10-05 16:50:00</td>
+<td>2026-10-05 16:50:00</td>
+<td>2026-10-05 16:45:00</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">gaps</th>
+<td>6</td>
+<td>4</td>
+<td>7</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">longest_gap</th>
+<td>2 days 08:36:05</td>
+<td>2 days 22:09:08</td>
+<td>2 days 07:15:16</td>
+<td>1 days 07:41:09</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">ruuvi_temp_%</th>
+<td>85.2</td>
+<td>0.0</td>
+<td>0.0</td>
+<td>0.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">soil_moisture_%</th>
+<td>99.9</td>
+<td>21.7</td>
+<td>15.3</td>
+<td>100.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">soil_temperature_%</th>
+<td>100.0</td>
+<td>14.2</td>
+<td>15.3</td>
+<td>100.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">frames_bad_px</th>
+<td>22</td>
+<td>150</td>
+<td>212</td>
+<td>109</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">frames_no_px</th>
+<td>1</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">soil_flagged</th>
+<td>5</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div id="9ed983af" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:06.469587+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:06.472260+00:00&quot;,&quot;total&quot;:0.0026773289999937333}}" data-execution_count="21">
+<hr>
+<section id="find_gaps" class="level3">
+<h3 class="anchored" data-anchor-id="find_gaps">find_gaps</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> find_gaps(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `read_logs` or `clean`</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    max_step:<span class="bu">str</span><span class="op">=</span><span class="st">'15min'</span>, <span class="co"># Longest expected interval between measurements</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># One row per gap: node, last measurement before it, first after it, and duration</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Intervals longer than <code>max_step</code> without a measurement, per node</em></p>
+</section>
+</div>
+<p><code>find_gaps</code> lists the outages behind the <code>gaps</code> count, to line them up across nodes:</p>
+<div id="eba0fc62" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>gaps <span class="op">=</span> find_gaps(cdf)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>gaps</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">node_id</th>
+<th data-quarto-table-cell-role="th">start</th>
+<th data-quarto-table-cell-role="th">end</th>
+<th data-quarto-table-cell-role="th">duration</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>SP_01</td>
+<td>2026-09-23 18:05:00</td>
+<td>2026-09-24 10:16:55</td>
+<td>0 days 16:11:55</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>SP_01</td>
+<td>2026-09-24 10:30:00</td>
+<td>2026-09-24 14:19:12</td>
+<td>0 days 03:49:12</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>SP_01</td>
+<td>2026-09-24 14:19:12</td>
+<td>2026-09-24 14:40:37</td>
+<td>0 days 00:21:25</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>SP_01</td>
+<td>2026-09-26 03:35:00</td>
+<td>2026-09-28 09:14:11</td>
+<td>2 days 05:39:11</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>SP_01</td>
+<td>2026-09-30 03:50:00</td>
+<td>2026-09-30 13:45:02</td>
+<td>0 days 09:55:02</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>SP_01</td>
+<td>2026-10-02 23:45:01</td>
+<td>2026-10-05 08:21:06</td>
+<td>2 days 08:36:05</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>SP_02</td>
+<td>2026-09-24 00:05:01</td>
+<td>2026-09-24 10:19:29</td>
+<td>0 days 10:14:28</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>SP_02</td>
+<td>2026-09-25 17:30:00</td>
+<td>2026-09-28 15:39:08</td>
+<td>2 days 22:09:08</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>SP_02</td>
+<td>2026-09-30 05:35:01</td>
+<td>2026-09-30 13:44:19</td>
+<td>0 days 08:09:18</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>SP_02</td>
+<td>2026-10-01 12:00:01</td>
+<td>2026-10-01 14:07:37</td>
+<td>0 days 02:07:36</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>SP_03</td>
+<td>2026-09-24 05:45:01</td>
+<td>2026-09-24 10:13:53</td>
+<td>0 days 04:28:52</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>SP_03</td>
+<td>2026-09-24 11:00:00</td>
+<td>2026-09-24 14:37:49</td>
+<td>0 days 03:37:49</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>SP_03</td>
+<td>2026-09-24 23:35:00</td>
+<td>2026-09-25 08:39:07</td>
+<td>0 days 09:04:07</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>SP_03</td>
+<td>2026-09-25 09:30:00</td>
+<td>2026-09-25 13:15:41</td>
+<td>0 days 03:45:41</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>SP_03</td>
+<td>2026-09-26 18:35:00</td>
+<td>2026-09-28 15:27:49</td>
+<td>1 days 20:52:49</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>SP_03</td>
+<td>2026-09-30 07:15:01</td>
+<td>2026-09-30 13:41:41</td>
+<td>0 days 06:26:40</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">16</th>
+<td>SP_03</td>
+<td>2026-10-03 01:05:01</td>
+<td>2026-10-05 08:20:17</td>
+<td>2 days 07:15:16</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">17</th>
+<td>SP_04</td>
+<td>2026-09-23 16:20:00</td>
+<td>2026-09-24 10:08:16</td>
+<td>0 days 17:48:16</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">18</th>
+<td>SP_04</td>
+<td>2026-09-24 11:40:00</td>
+<td>2026-09-24 13:17:08</td>
+<td>0 days 01:37:08</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">19</th>
+<td>SP_04</td>
+<td>2026-09-25 05:55:00</td>
+<td>2026-09-25 08:29:13</td>
+<td>0 days 02:34:13</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">20</th>
+<td>SP_04</td>
+<td>2026-09-27 07:25:00</td>
+<td>2026-09-28 15:06:09</td>
+<td>1 days 07:41:09</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">21</th>
+<td>SP_04</td>
+<td>2026-09-30 10:00:00</td>
+<td>2026-09-30 13:41:17</td>
+<td>0 days 03:41:17</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/franckalbinet\.github\.io\/speaking-plants");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/franckalbinet/speaking-plants/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>

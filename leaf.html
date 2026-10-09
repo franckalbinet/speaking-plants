@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.19">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="description" content="Daily leaf temperature, its rate of change and leaf minus air temperature, per node">
+
+<title>Leaf temperature – speaking-plants</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous"></script><script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-bf27225e3a48a9273f3daa8f8e829971.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-cbed26e0df856eae0d97ab8ae9893fbb.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+<script src="https://cdn.jsdelivr.net/npm/requirejs@2.3.6/require.min.js" integrity="sha384-c9c+LnTbwQ3aujuU7ULEPVvgLs+Fn6fJUvIGTsuu1ZcCf11fiEubah0ttpca4ntM sha384-6V1/AdqZRWk1KAlWbKBlGhN7VG4iE/yAZcO6NZPMF8od0vukrvr0tg4qY6NSrItx" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+
+
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Leaf temperature – speaking-plants">
+<meta property="og:description" content="Daily leaf temperature, its rate of change and leaf minus air temperature, per node">
+<meta property="og:image" content="https://franckalbinet.github.io/speaking-plants/01_leaf_files/figure-html/cell-21-output-1.png">
+<meta property="og:site_name" content="speaking-plants">
+<meta property="og:image:height" content="619">
+<meta property="og:image:width" content="3579">
+<meta name="twitter:title" content="Leaf temperature – speaking-plants">
+<meta name="twitter:description" content="Daily leaf temperature, its rate of change and leaf minus air temperature, per node">
+<meta name="twitter:image" content="https://franckalbinet.github.io/speaking-plants/01_leaf_files/figure-html/cell-21-output-1.png">
+<meta name="twitter:image-height" content="619">
+<meta name="twitter:image-width" content="3579">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+
+<body class="nav-sidebar floating nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">speaking-plants</span>
+    </a>
+  </div>
+        <div class="quarto-navbar-tools tools-end">
+</div>
+          <div id="quarto-search" class="" title="Search"></div>
+      </div> <!-- /container-fluid -->
+    </nav>
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./clean.html">API reference</a></li><li class="breadcrumb-item"><a href="./leaf.html">Leaf temperature</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Overview</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+ <span class="menu-text">API reference</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./clean.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Clean</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./leaf.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">Leaf temperature</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./environment.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Environment</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./logbook.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Logbook</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true">
+ <span class="menu-text">Batches</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./batches/b02/diagnosis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Batch 2: water stress diagnosis</span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#data" id="toc-data" class="nav-link active" data-scroll-target="#data">Data</a></li>
+  <li><a href="#full-days" id="toc-full-days" class="nav-link" data-scroll-target="#full-days">Full days</a></li>
+  <li><a href="#leaf-masks" id="toc-leaf-masks" class="nav-link" data-scroll-target="#leaf-masks">Leaf masks</a></li>
+  <li><a href="#leaf-temperature-series" id="toc-leaf-temperature-series" class="nav-link" data-scroll-target="#leaf-temperature-series">Leaf temperature series</a></li>
+  <li><a href="#daylight" id="toc-daylight" class="nav-link" data-scroll-target="#daylight">Daylight</a></li>
+  <li><a href="#scene-changes" id="toc-scene-changes" class="nav-link" data-scroll-target="#scene-changes">Scene changes</a></li>
+  <li><a href="#comparing-nodes" id="toc-comparing-nodes" class="nav-link" data-scroll-target="#comparing-nodes">Comparing nodes</a></li>
+  <li><a href="#daily-fits" id="toc-daily-fits" class="nav-link" data-scroll-target="#daily-fits">Daily fits</a></li>
+  </ul>
+<div class="toc-actions"><ul><li><a href="https://github.com/franckalbinet/speaking-plants/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div><div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="leaf.html.md"><i class="bi bi-file-code"></i>Markdown</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./clean.html">API reference</a></li><li class="breadcrumb-item"><a href="./leaf.html">Leaf temperature</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Leaf temperature</h1>
+</div>
+
+<div>
+  <div class="description">
+    Daily leaf temperature, its rate of change and leaf minus air temperature, per node
+  </div>
+</div>
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<!-- WARNING: THIS FILE WAS AUTOGENERATED! DO NOT EDIT! -->
+<p>This module turns the measurements of <code>clean</code> into one leaf temperature series per node and day. Each thermal image also shows background, so a mask keeps only the leaf pixels: the pixels that vary most over time, since a leaf warms and cools more than its surroundings. From the masked pixels, each image gives one leaf temperature. Its rate of change, from a Savitzky-Golay filter, and its difference to air temperature are the signatures to compare across days and nodes.</p>
+<div id="19dc52e1" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.340529+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.341669+00:00&quot;,&quot;total&quot;:0.001144546000034552}}" data-execution_count="2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.utils <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> fastcore.test <span class="im">import</span> <span class="op">*</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> speaking_plants.clean <span class="im">import</span> <span class="op">*</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="data" class="level2">
+<h2 class="anchored" data-anchor-id="data">Data</h2>
+<p>The input is one row per measurement, from <code>measurements</code>, with the Ruuvi readings of <code>SP_01</code> shared with every node by <code>share_ruuvi</code>. The examples use batch 1, from <code>data/b01/</code>:</p>
+<div id="1f015ffa" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> Path(<span class="st">'../data/b01'</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>mdf <span class="op">=</span> share_ruuvi(measurements(clean(read_logs(<span class="bu">sorted</span>(data.glob(<span class="st">'dados_*.csv'</span>))))))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="full-days" class="level2">
+<h2 class="anchored" data-anchor-id="full-days">Full days</h2>
+<p>A day of measurements every 5 minutes has 288 of them. Only days close to that show the whole daily cycle, so the analysis keeps node-days with at least <code>min_n</code> measurements. Days run from midnight to midnight, local time.</p>
+<div id="4abf5d8c" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.343179+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.395961+00:00&quot;,&quot;total&quot;:0.05278917900000124}}" data-execution_count="4">
+<hr>
+<section id="full_days" class="level3">
+<h3 class="anchored" data-anchor-id="full_days">full_days</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> full_days(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `measurements`</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    min_n:<span class="bu">int</span><span class="op">=</span><span class="dv">280</span>, <span class="co"># Fewest measurements for a full day</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># One row per full day, with `node_id` and `day`</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Node-days with at least <code>min_n</code> measurements</em></p>
+</section>
+</div>
+<div id="0fa0b3f2" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>days <span class="op">=</span> full_days(mdf)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>days.assign(v<span class="op">=</span><span class="st">'✓'</span>).pivot(index<span class="op">=</span><span class="st">'day'</span>, columns<span class="op">=</span><span class="st">'node_id'</span>, values<span class="op">=</span><span class="st">'v'</span>).fillna(<span class="st">''</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th">node_id</th>
+<th data-quarto-table-cell-role="th">SP_01</th>
+<th data-quarto-table-cell-role="th">SP_02</th>
+<th data-quarto-table-cell-role="th">SP_03</th>
+<th data-quarto-table-cell-role="th">SP_04</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">day</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2026-09-25</th>
+<td>✓</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2026-09-26</th>
+<td></td>
+<td></td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2026-09-29</th>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2026-10-01</th>
+<td>✓</td>
+<td></td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2026-10-02</th>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+<td>✓</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2026-10-03</th>
+<td></td>
+<td>✓</td>
+<td></td>
+<td>✓</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2026-10-04</th>
+<td></td>
+<td>✓</td>
+<td></td>
+<td>✓</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="leaf-masks" class="level2">
+<h2 class="anchored" data-anchor-id="leaf-masks">Leaf masks</h2>
+<p>The standard deviation of each pixel over time maps where the temperature moves. <code>top_mask</code> keeps the pixels above the <code>q</code> quantile of that map, so <code>q=0.9</code> keeps the 10% that vary most. Pixels that <code>clean</code> set to missing are ignored.</p>
+<div id="7a2be129" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.397614+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.400118+00:00&quot;,&quot;total&quot;:0.0025080830000092647}}" data-execution_count="6">
+<hr>
+<section id="top_mask" class="level3">
+<h3 class="anchored" data-anchor-id="top_mask">top_mask</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> top_mask(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    sd:numpy.ndarray, <span class="co"># Output of `std_map`</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    q:<span class="bu">float</span><span class="op">=</span><span class="fl">0.9</span>, <span class="co"># Quantile above which a pixel counts as leaf</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>numpy.ndarray: <span class="co"># Boolean, same shape as `sd`</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Pixels whose standard deviation is above the <code>q</code> quantile</em></p>
+</section>
+</div>
+<div id="5d5c999b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.400210+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.402442+00:00&quot;,&quot;total&quot;:0.002235581999968872}}" data-execution_count="7">
+<hr>
+<section id="std_map" class="level3">
+<h3 class="anchored" data-anchor-id="std_map">std_map</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> std_map(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Rows of `measurements` output</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>numpy.ndarray: <span class="co"># Shape `(24, 32)`, standard deviation of each pixel over the rows</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Standard deviation of each pixel over time</em></p>
+</section>
+</div>
+<p>A mask can come from each day or from a node’s whole batch. A daily mask follows the leaf if the plant or the camera moves, but a day with little temperature variation may pick up background. A batch mask is the same for every day of a node, which keeps the days comparable. A batch mask is only valid while the camera scene stays the same, as the section on scene changes explains. <code>no_masks</code> keeps every pixel. Its profile is the reference, since a mask is only useful if it changes the result compared with all pixels. All three functions return a mask per node-day, and the rest of the analysis takes any of them:</p>
+<div id="7a1b8e15" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.404501+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.406806+00:00&quot;,&quot;total&quot;:0.002308983000034459}}" data-execution_count="9">
+<hr>
+<section id="no_masks" class="level3">
+<h3 class="anchored" data-anchor-id="no_masks">no_masks</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> no_masks(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    days:pandas.DataFrame, <span class="co"># Output of `full_days`</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">dict</span>: <span class="co"># All-pixel mask per `(node_id, day)`</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Masks that keep every pixel, for the unmasked profile</em></p>
+</section>
+</div>
+<div id="dadff0cc" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.406896+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.409374+00:00&quot;,&quot;total&quot;:0.0024815229999717303}}" data-execution_count="10">
+<hr>
+<section id="batch_masks" class="level3">
+<h3 class="anchored" data-anchor-id="batch_masks">batch_masks</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> batch_masks(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `measurements`</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    days:pandas.DataFrame, <span class="co"># Output of `full_days`</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    q:<span class="bu">float</span><span class="op">=</span><span class="fl">0.9</span>, <span class="co"># Quantile above which a pixel counts as leaf</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">dict</span>: <span class="co"># Mask per `(node_id, day)`, from all of the node's images</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>One leaf mask per node, from all its images, repeated for each of its days</em></p>
+</section>
+</div>
+<div id="f07662e5" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.409463+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.411891+00:00&quot;,&quot;total&quot;:0.002431387999990875}}" data-execution_count="11">
+<hr>
+<section id="daily_masks" class="level3">
+<h3 class="anchored" data-anchor-id="daily_masks">daily_masks</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> daily_masks(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `measurements`</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    days:pandas.DataFrame, <span class="co"># Output of `full_days`</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    q:<span class="bu">float</span><span class="op">=</span><span class="fl">0.9</span>, <span class="co"># Quantile above which a pixel counts as leaf</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">dict</span>: <span class="co"># Mask per `(node_id, day)`, from that day's images</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>One leaf mask per node-day, from that day</em></p>
+</section>
+</div>
+<div id="360ac122" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>dm, bm <span class="op">=</span> daily_masks(mdf, days), batch_masks(mdf, days)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="leaf-temperature-series" class="level2">
+<h2 class="anchored" data-anchor-id="leaf-temperature-series">Leaf temperature series</h2>
+<p><code>leaf_series</code> reduces each image to the median of its masked pixels, the leaf temperature <code>t_leaf</code>. It puts each node-day on a regular grid with a step of <code>step</code>, so a missing measurement is a missing value rather than a longer interval. <code>slope</code> then smooths and differentiates the series with a Savitzky-Golay filter, in °C per minute. The filter needs equally spaced values, so it runs on each stretch without missing values, and stretches shorter than <code>window</code> get no slope. With a 5-minute step, the default window of 9 spans 45 minutes. <code>smooth</code> uses the same filter without differentiating, for the <code>t_smooth</code> and <code>dt_smooth</code> columns. Its default window of 13 spans 1 hour. That removes the fluctuations of a few minutes that appear in daytime only and on all nodes at once, most likely changes in sunlight.</p>
+<div id="3111b894" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.414143+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.416491+00:00&quot;,&quot;total&quot;:0.0023528300000066338}}" data-execution_count="13">
+<hr>
+<section id="slope" class="level3">
+<h3 class="anchored" data-anchor-id="slope">slope</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> slope(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    s:pandas.Series, <span class="co"># Output of `regular`</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    window:<span class="bu">int</span><span class="op">=</span><span class="dv">9</span>, <span class="co"># Points in the Savitzky-Golay window</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    polyorder:<span class="bu">int</span><span class="op">=</span><span class="dv">3</span>, <span class="co"># Order of the fitted polynomial</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.Series: <span class="co"># Rate of change per minute, missing on stretches shorter than `window`</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Smoothed first derivative of a regular series</em></p>
+</section>
+</div>
+<div id="66fc9165" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.416582+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.418925+00:00&quot;,&quot;total&quot;:0.0023461290000454937}}" data-execution_count="14">
+<hr>
+<section id="smooth" class="level3">
+<h3 class="anchored" data-anchor-id="smooth">smooth</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> smooth(</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    s:pandas.Series, <span class="co"># Output of `regular`</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    window:<span class="bu">int</span><span class="op">=</span><span class="dv">13</span>, <span class="co"># Points in the Savitzky-Golay window</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    polyorder:<span class="bu">int</span><span class="op">=</span><span class="dv">3</span>, <span class="co"># Order of the fitted polynomial</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.Series: <span class="co"># Smoothed values, missing on stretches shorter than `window`</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Smoothed regular series</em></p>
+</section>
+</div>
+<div id="b8781451" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.419013+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.421418+00:00&quot;,&quot;total&quot;:0.0024086230000079922}}" data-execution_count="15">
+<hr>
+<section id="regular" class="level3">
+<h3 class="anchored" data-anchor-id="regular">regular</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> regular(</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    s:pandas.Series, <span class="co"># Values indexed by time</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>    step:<span class="bu">str</span><span class="op">=</span><span class="st">'5min'</span>, <span class="co"># Grid step</span></span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.Series: <span class="co"># Values on a grid from the first time, missing where no value is within half a step</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Put a time series on a regular grid</em></p>
+</section>
+</div>
+<div id="15403507" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> pd.date_range(<span class="st">'2026-10-01'</span>, periods<span class="op">=</span><span class="dv">30</span>, freq<span class="op">=</span><span class="st">'5min'</span>)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>s <span class="op">=</span> regular(pd.Series(<span class="fl">2.</span> <span class="op">*</span> np.arange(<span class="dv">30</span>), index<span class="op">=</span>t <span class="op">+</span> pd.Timedelta(<span class="st">'1s'</span>)))</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>test_close(slope(s).to_numpy(), np.full(<span class="dv">30</span>, <span class="fl">0.4</span>))</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>test_close(smooth(s).to_numpy(), s.to_numpy())</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Transpiration is driven by the vapour pressure deficit (VPD): the gap between the vapour pressure of saturated air at the air temperature and the actual vapour pressure. A plant that transpires well cools more below the air as VPD rises. <code>vpd</code> computes it in kPa from the Ruuvi temperature and relative humidity, with the Tetens formula for the saturation vapour pressure, and <code>leaf_series</code> adds it as the <code>vpd</code> column.</p>
+<div id="924c77a3" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.422535+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.424786+00:00&quot;,&quot;total&quot;:0.0022543800000107694}}" data-execution_count="17">
+<hr>
+<section id="vpd" class="level3">
+<h3 class="anchored" data-anchor-id="vpd">vpd</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> vpd(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    t, <span class="co"># Air temperature (°C)</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    rh, <span class="co"># Relative humidity (%)</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Vapour pressure deficit, with the Tetens formula for the saturation vapour pressure</em></p>
+</section>
+</div>
+<p>At 25 °C, saturated air holds 3.17 kPa of water vapour. Air at 60% relative humidity then has a deficit of 1.27 kPa:</p>
+<div id="4547c4fa" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>test_close(vpd(<span class="dv">25</span>, <span class="dv">60</span>), <span class="fl">1.267</span>, eps<span class="op">=</span><span class="fl">1e-3</span>)</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>test_eq(vpd(<span class="dv">20</span>, <span class="dv">100</span>), <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div id="87dbd2e8" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.426959+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.430377+00:00&quot;,&quot;total&quot;:0.003421772000024248}}" data-execution_count="19">
+<hr>
+<section id="leaf_series" class="level3">
+<h3 class="anchored" data-anchor-id="leaf_series">leaf_series</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> leaf_series(</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `share_ruuvi`</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    masks:<span class="bu">dict</span>, <span class="co"># Output of `daily_masks`, `batch_masks` or `no_masks`</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    step:<span class="bu">str</span><span class="op">=</span><span class="st">'5min'</span>, <span class="co"># Grid step</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>    window:<span class="bu">int</span><span class="op">=</span><span class="dv">9</span>, <span class="co"># Points in the Savitzky-Golay window of `slope`</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>    polyorder:<span class="bu">int</span><span class="op">=</span><span class="dv">3</span>, <span class="co"># Order of the fitted polynomial</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    smooth_window:<span class="bu">int</span><span class="op">=</span><span class="dv">13</span>, <span class="co"># Points in the smoothing window of `t_smooth` and `dt_smooth`</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># One row per grid time and node-day</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Leaf temperature, air temperature and VPD, leaf minus air, raw and smoothed, and the leaf slope, per node-day</em></p>
+</section>
+</div>
+<div id="f4c3c57a" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>ls <span class="op">=</span> leaf_series(mdf, no_masks(days))</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>ls.head()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">time</th>
+<th data-quarto-table-cell-role="th">node_id</th>
+<th data-quarto-table-cell-role="th">day</th>
+<th data-quarto-table-cell-role="th">hour</th>
+<th data-quarto-table-cell-role="th">t_leaf</th>
+<th data-quarto-table-cell-role="th">t_smooth</th>
+<th data-quarto-table-cell-role="th">t_air</th>
+<th data-quarto-table-cell-role="th">vpd</th>
+<th data-quarto-table-cell-role="th">dt_leaf_air</th>
+<th data-quarto-table-cell-role="th">dt_smooth</th>
+<th data-quarto-table-cell-role="th">slope</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>2026-09-25 00:00:00</td>
+<td>SP_01</td>
+<td>2026-09-25</td>
+<td>0.000000</td>
+<td>22.045</td>
+<td>22.023571</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>-0.010531</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>2026-09-25 00:05:00</td>
+<td>SP_01</td>
+<td>2026-09-25</td>
+<td>0.083333</td>
+<td>21.955</td>
+<td>21.999945</td>
+<td>19.94</td>
+<td>1.129395</td>
+<td>2.015</td>
+<td>NaN</td>
+<td>-0.006806</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>2026-09-25 00:10:00</td>
+<td>SP_01</td>
+<td>2026-09-25</td>
+<td>0.166667</td>
+<td>21.980</td>
+<td>21.973666</td>
+<td>19.93</td>
+<td>1.127066</td>
+<td>2.050</td>
+<td>NaN</td>
+<td>-0.004375</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>2026-09-25 00:15:00</td>
+<td>SP_01</td>
+<td>2026-09-25</td>
+<td>0.250000</td>
+<td>21.960</td>
+<td>21.945749</td>
+<td>19.91</td>
+<td>1.126601</td>
+<td>2.050</td>
+<td>NaN</td>
+<td>-0.003236</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>2026-09-25 00:20:00</td>
+<td>SP_01</td>
+<td>2026-09-25</td>
+<td>0.333333</td>
+<td>21.935</td>
+<td>21.917208</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>NaN</td>
+<td>-0.003391</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<p><code>hour</code> is the time of day, which lines days up on one axis. <code>plot_panels</code> draws one panel per value of <code>panel</code> and one line per value of <code>line</code>:</p>
+<div id="4b6f3b65" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.432503+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.435790+00:00&quot;,&quot;total&quot;:0.00329077399999278}}" data-execution_count="21">
+<hr>
+<section id="plot_panels" class="level3">
+<h3 class="anchored" data-anchor-id="plot_panels">plot_panels</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_panels(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `leaf_series`</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    col:<span class="bu">str</span>, <span class="co"># Column to plot against `hour`</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    panel:<span class="bu">str</span><span class="op">=</span><span class="st">'node_id'</span>, <span class="co"># Column with one panel per value</span></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>    line:<span class="bu">str</span><span class="op">=</span><span class="st">'day'</span>, <span class="co"># Column with one line per value</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>    ylabel:<span class="bu">str</span><span class="op">=</span><span class="va">None</span>, <span class="co"># Label of the y axis, `col` by default</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>    title:<span class="bu">str</span><span class="op">=</span><span class="st">''</span>, <span class="co"># Prefix of each panel title</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Plot <code>col</code> against time of day, one panel per <code>panel</code> value and one line per <code>line</code> value</em></p>
+</section>
+</div>
+<div id="62a6edb1" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>plot_panels(ls, <span class="st">'t_smooth'</span>, ylabel<span class="op">=</span><span class="st">'leaf temperature (°C)'</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_leaf_files/figure-html/cell-21-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="daylight" class="level2">
+<h2 class="anchored" data-anchor-id="daylight">Daylight</h2>
+<p>Day and night follow sunrise and sunset, which shift by a few minutes each day. <code>sun_times</code> gets them from <code>astral</code> for a site. The default site is Seibersdorf, Austria, where the preliminary experiment ran. The times are Austrian local time, like <code>time</code> in the logs.</p>
+<div id="fc56736b" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.437673+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.440099+00:00&quot;,&quot;total&quot;:0.002429274999997233}}" data-execution_count="23">
+<hr>
+<section id="is_day" class="level3">
+<h3 class="anchored" data-anchor-id="is_day">is_day</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> is_day(</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>    times, <span class="co"># Local times</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>    loc:astral.LocationInfo<span class="op">=</span>LocationInfo(name<span class="op">=</span><span class="st">'Seibersdorf'</span>, region<span class="op">=</span><span class="st">'Austria'</span>, timezone<span class="op">=</span><span class="st">'Europe/Vienna'</span>, latitude<span class="op">=</span><span class="fl">47.976</span>, longitude<span class="op">=</span><span class="fl">16.508</span>), <span class="co"># Site of the greenhouse</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>numpy.ndarray: <span class="co"># True from sunrise to sunset</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Whether each time is in daylight</em></p>
+</section>
+</div>
+<div id="638ef5ab" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.440190+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.442864+00:00&quot;,&quot;total&quot;:0.002677799000025516}}" data-execution_count="24">
+<hr>
+<section id="sun_times" class="level3">
+<h3 class="anchored" data-anchor-id="sun_times">sun_times</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sun_times(</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>    times, <span class="co"># Times or days, local time</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>    loc:astral.LocationInfo<span class="op">=</span>LocationInfo(name<span class="op">=</span><span class="st">'Seibersdorf'</span>, region<span class="op">=</span><span class="st">'Austria'</span>, timezone<span class="op">=</span><span class="st">'Europe/Vienna'</span>, latitude<span class="op">=</span><span class="fl">47.976</span>, longitude<span class="op">=</span><span class="fl">16.508</span>), <span class="co"># Site of the greenhouse</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># One row per day, with dawn, sunrise, noon, sunset and dusk in local time</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Sun events for each day in <code>times</code></em></p>
+</section>
+</div>
+<div id="9f2cf3bf" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>st <span class="op">=</span> sun_times(pd.date_range(<span class="st">'2026-09-23'</span>, <span class="st">'2026-10-05'</span>))</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="ss">f"</span><span class="sc">{</span>st<span class="sc">.</span>sunrise<span class="sc">.</span>iloc[<span class="dv">0</span>]<span class="sc">:</span><span class="op">%</span>H<span class="sc">:</span><span class="op">%</span>M<span class="sc">}</span><span class="ss">-</span><span class="sc">{</span>st<span class="sc">.</span>sunset<span class="sc">.</span>iloc[<span class="dv">0</span>]<span class="sc">:</span><span class="op">%</span>H<span class="sc">:</span><span class="op">%</span>M<span class="sc">}</span><span class="ss">"</span>, <span class="st">'06:42-18:49'</span>)</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>test_eq(is_day(pd.to_datetime([<span class="st">'2026-09-30 03:00'</span>, <span class="st">'2026-09-30 06:30'</span>, <span class="st">'2026-09-30 07:00'</span>, <span class="st">'2026-09-30 18:30'</span>, <span class="st">'2026-09-30 18:40'</span>])), [<span class="va">False</span>, <span class="va">False</span>, <span class="va">True</span>, <span class="va">True</span>, <span class="va">False</span>])</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>st.<span class="bu">apply</span>(<span class="kw">lambda</span> s: s.dt.strftime(<span class="st">'%H:%M'</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">dawn</th>
+<th data-quarto-table-cell-role="th">sunrise</th>
+<th data-quarto-table-cell-role="th">noon</th>
+<th data-quarto-table-cell-role="th">sunset</th>
+<th data-quarto-table-cell-role="th">dusk</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">day</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2026-09-23</th>
+<td>06:10</td>
+<td>06:42</td>
+<td>12:46</td>
+<td>18:49</td>
+<td>19:21</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2026-09-24</th>
+<td>06:11</td>
+<td>06:43</td>
+<td>12:46</td>
+<td>18:47</td>
+<td>19:19</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2026-09-25</th>
+<td>06:13</td>
+<td>06:44</td>
+<td>12:45</td>
+<td>18:45</td>
+<td>19:17</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2026-09-26</th>
+<td>06:14</td>
+<td>06:46</td>
+<td>12:45</td>
+<td>18:43</td>
+<td>19:15</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2026-09-27</th>
+<td>06:16</td>
+<td>06:47</td>
+<td>12:45</td>
+<td>18:41</td>
+<td>19:12</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2026-09-28</th>
+<td>06:17</td>
+<td>06:48</td>
+<td>12:44</td>
+<td>18:39</td>
+<td>19:10</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2026-09-29</th>
+<td>06:18</td>
+<td>06:50</td>
+<td>12:44</td>
+<td>18:37</td>
+<td>19:08</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2026-09-30</th>
+<td>06:20</td>
+<td>06:51</td>
+<td>12:44</td>
+<td>18:35</td>
+<td>19:06</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2026-10-01</th>
+<td>06:21</td>
+<td>06:53</td>
+<td>12:43</td>
+<td>18:33</td>
+<td>19:04</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2026-10-02</th>
+<td>06:23</td>
+<td>06:54</td>
+<td>12:43</td>
+<td>18:31</td>
+<td>19:02</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2026-10-03</th>
+<td>06:24</td>
+<td>06:55</td>
+<td>12:43</td>
+<td>18:29</td>
+<td>19:00</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">2026-10-04</th>
+<td>06:25</td>
+<td>06:57</td>
+<td>12:42</td>
+<td>18:27</td>
+<td>18:58</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2026-10-05</th>
+<td>06:27</td>
+<td>06:58</td>
+<td>12:42</td>
+<td>18:25</td>
+<td>18:56</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="scene-changes" class="level2">
+<h2 class="anchored" data-anchor-id="scene-changes">Scene changes</h2>
+<p>A camera that is moved, or a plant that is moved or replaced, changes what each pixel sees. Masks, biases and fitted lines are only valid within a stretch of days with the same scene. <code>scene_similarity</code> compares the daily standard deviation maps of each node. Two days with the same scene correlate highly. A low correlation between neighbouring days points to a change between them. Days with fewer than <code>min_n</code> measurements are left out, because a partial day covers only part of the daily cycle and its map is less reliable.</p>
+<div id="130378fb" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.445705+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.448795+00:00&quot;,&quot;total&quot;:0.0030937870000116163}}" data-execution_count="26">
+<hr>
+<section id="plot_scene_similarity" class="level3">
+<h3 class="anchored" data-anchor-id="plot_scene_similarity">plot_scene_similarity</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_scene_similarity(</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>    sim:<span class="bu">dict</span>, <span class="co"># Output of `scene_similarity`</span></span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>One heatmap per node of the correlation between its days</em></p>
+</section>
+</div>
+<div id="14bec3ef" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.448886+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.451509+00:00&quot;,&quot;total&quot;:0.0026262519999704637}}" data-execution_count="27">
+<hr>
+<section id="scene_similarity" class="level3">
+<h3 class="anchored" data-anchor-id="scene_similarity">scene_similarity</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scene_similarity(</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `measurements`</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>    min_n:<span class="bu">int</span><span class="op">=</span><span class="dv">144</span>, <span class="co"># Fewest measurements for a day to be compared</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">dict</span>: <span class="co"># Correlation matrix of daily standard deviation maps, per node</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Correlation between the daily standard deviation maps of each node</em></p>
+</section>
+</div>
+<p>In batch 1, all four nodes change on 30 September. <code>SP_01</code> also changes across the outage from 25 to 28 September. <code>SP_03</code> has no stable stretch before 30 September, and the 23 September map of <code>SP_02</code> matches none of its other days:</p>
+<div id="767f60a8" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>plot_scene_similarity(scene_similarity(mdf))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_leaf_files/figure-html/cell-27-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The analysis of a batch records the dates of its scene changes. <code>periods</code> turns them into filters for time-indexed tables, one per stretch with the same scene. Each period starts at a change date and ends before the next one:</p>
+<div id="22932a40" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.453308+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.456216+00:00&quot;,&quot;total&quot;:0.002912013000013758}}" data-execution_count="29">
+<hr>
+<section id="periods" class="level3">
+<h3 class="anchored" data-anchor-id="periods">periods</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> periods(</span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>    bounds:<span class="bu">tuple</span><span class="op">=</span>(), <span class="co"># Dates of scene changes</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">dict</span>: <span class="co"># Filter per period, for tables indexed by time</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Split a time-indexed table at each date in <code>bounds</code></em></p>
+</section>
+</div>
+<div id="9563dc54" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> pd.DataFrame({<span class="st">'a'</span>: <span class="bu">range</span>(<span class="dv">9</span>)}, index<span class="op">=</span>pd.date_range(<span class="st">'2026-09-28'</span>, periods<span class="op">=</span><span class="dv">9</span>, freq<span class="op">=</span><span class="st">'12h'</span>))</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>ps <span class="op">=</span> periods([<span class="st">'2026-09-30'</span>])</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">list</span>(ps), [<span class="st">'before 30 Sep'</span>, <span class="st">'from 30 Sep'</span>])</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>test_eq([<span class="bu">len</span>(f(w)) <span class="cf">for</span> f <span class="kw">in</span> ps.values()], [<span class="dv">4</span>, <span class="dv">5</span>])</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>test_eq(<span class="bu">list</span>(periods()), [<span class="st">'all'</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</section>
+<section id="comparing-nodes" class="level2">
+<h2 class="anchored" data-anchor-id="comparing-nodes">Comparing nodes</h2>
+<p><code>node_table</code> puts one column of <code>leaf_series</code> output side by side for all nodes. All nodes measure on the same 5-minute grid to within a second. Rounding times to 5 minutes therefore aligns them:</p>
+<div id="1b481dff" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.457489+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.459872+00:00&quot;,&quot;total&quot;:0.0023867900000027475}}" data-execution_count="31">
+<hr>
+<section id="node_table" class="level3">
+<h3 class="anchored" data-anchor-id="node_table">node_table</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> node_table(</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>    df:pandas.DataFrame, <span class="co"># Output of `leaf_series`</span></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>    col:<span class="bu">str</span>, <span class="co"># Column to tabulate</span></span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># One column per node, indexed by time rounded to 5 minutes</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>One column per node on a shared 5-minute time index</em></p>
+</section>
+</div>
+<p>Over all hours, nights and days form two clusters, and a line fitted through two clusters mostly measures the gap between them. Comparisons are therefore made within each regime. <code>regimes</code> splits a time-indexed table into day, from sunrise to sunset, and night. <code>combine</code> crosses regimes with the periods of a batch:</p>
+<div id="d14ef866" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.461170+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.463605+00:00&quot;,&quot;total&quot;:0.0024388080000221635}}" data-execution_count="33">
+<hr>
+<section id="combine" class="level3">
+<h3 class="anchored" data-anchor-id="combine">combine</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> combine(</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>    periods:<span class="bu">dict</span>, <span class="co"># Output of `periods`</span></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    regimes:<span class="bu">dict</span><span class="op">=</span>{<span class="st">'night'</span>: <span class="op">&lt;</span>function <span class="op">&lt;</span><span class="kw">lambda</span><span class="op">&gt;</span> at <span class="bn">0x7f96cbc15800</span><span class="op">&gt;</span>, <span class="st">'day'</span>: <span class="op">&lt;</span>function <span class="op">&lt;</span><span class="kw">lambda</span><span class="op">&gt;</span> at <span class="bn">0x7f96cbc15580</span><span class="op">&gt;</span>}, <span class="co"># Filter per regime</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span><span class="bu">dict</span>: <span class="co"># Filter per regime and period</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Filters for each regime within each period</em></p>
+</section>
+</div>
+<p>A correlation says whether two series move together, not whether they agree. <code>pair_stats</code> gives, for each pair of columns and each group of times, the bias (the mean of <code>y</code> minus <code>x</code>), the line fitted to <code>y</code> against <code>x</code>, and the correlation. A slope of 1 means both see the same swing. Groups with fewer than 3 shared values are skipped:</p>
+<div id="3a374168" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.465186+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.468040+00:00&quot;,&quot;total&quot;:0.002858050999975603}}" data-execution_count="35">
+<hr>
+<section id="pair_stats" class="level3">
+<h3 class="anchored" data-anchor-id="pair_stats">pair_stats</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb31"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> pair_stats(</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>    w:pandas.DataFrame, <span class="co"># Output of `node_table`, optionally with an `air` column</span></span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>    groups:<span class="bu">dict</span>, <span class="co"># Filter per group of times, such as the output of `combine`</span></span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># One row per pair and group</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Bias, fitted line and correlation of <code>y</code> against <code>x</code>, for each pair of columns of <code>w</code> and each group</em></p>
+</section>
+</div>
+<div id="fc59fee9" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> pd.date_range(<span class="st">'2026-10-01'</span>, periods<span class="op">=</span><span class="dv">48</span>, freq<span class="op">=</span><span class="st">'h'</span>)</span>
+<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> pd.DataFrame({<span class="st">'a'</span>: np.arange(<span class="fl">48.</span>)}, index<span class="op">=</span>t).assign(b<span class="op">=</span><span class="kw">lambda</span> d: <span class="dv">2</span> <span class="op">*</span> d.a <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>st <span class="op">=</span> pair_stats(w, {<span class="st">'all'</span>: <span class="kw">lambda</span> w: w})</span>
+<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>test_eq(st[[<span class="st">'bias'</span>, <span class="st">'slope'</span>, <span class="st">'intercept'</span>, <span class="st">'r'</span>]].iloc[<span class="dv">0</span>].tolist(), [<span class="fl">24.5</span>, <span class="fl">2.0</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p><code>scatter_matrix</code> plots each pair of columns against each other, one colour and one fitted line per group. The dashed line is 1:1:</p>
+<div id="e81780f2" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.471946+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.476276+00:00&quot;,&quot;total&quot;:0.004333557000052224}}" data-execution_count="37">
+<hr>
+<section id="scatter_matrix" class="level3">
+<h3 class="anchored" data-anchor-id="scatter_matrix">scatter_matrix</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb33"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scatter_matrix(</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>    w:pandas.DataFrame, <span class="co"># Output of `node_table`, optionally with an `air` column</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>    groups:<span class="bu">dict</span><span class="op">=</span>{<span class="st">'night'</span>: <span class="op">&lt;</span>function <span class="op">&lt;</span><span class="kw">lambda</span><span class="op">&gt;</span> at <span class="bn">0x7f96cbc15800</span><span class="op">&gt;</span>, <span class="st">'day'</span>: <span class="op">&lt;</span>function <span class="op">&lt;</span><span class="kw">lambda</span><span class="op">&gt;</span> at <span class="bn">0x7f96cbc15580</span><span class="op">&gt;</span>}, <span class="co"># Filter per group of times</span></span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>    label:<span class="bu">str</span><span class="op">=</span><span class="st">'°C'</span>, <span class="co"># Unit of the axes</span></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>    title:<span class="bu">str</span><span class="op">=</span><span class="st">''</span>, <span class="co"># Figure title</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>):</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Pairwise scatter plots of the columns of <code>w</code>, with one fitted line per group</em></p>
+</section>
+</div>
+<p>For example, the unmasked leaf temperature of each node in batch 1 against air temperature and the other nodes, from the scene change on 30 September:</p>
+<div id="6a412898" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>us <span class="op">=</span> leaf_series(mdf, no_masks(full_days(mdf, min_n<span class="op">=</span><span class="dv">13</span>)))</span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>tl <span class="op">=</span> node_table(us, <span class="st">'t_leaf'</span>)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>tl.insert(<span class="dv">0</span>, <span class="st">'air'</span>, node_table(us, <span class="st">'t_air'</span>).mean(axis<span class="op">=</span><span class="dv">1</span>))</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>after <span class="op">=</span> periods([<span class="st">'2026-09-30'</span>])[<span class="st">'from 30 Sep'</span>]</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>scatter_matrix(after(tl), title<span class="op">=</span><span class="st">'from 30 Sep'</span>)</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>pair_stats(tl, combine(periods([<span class="st">'2026-09-30'</span>]))).query(<span class="st">"x == 'air'"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01_leaf_files/figure-html/cell-35-output-1.png" class="img-fluid figure-img"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">x</th>
+<th data-quarto-table-cell-role="th">y</th>
+<th data-quarto-table-cell-role="th">group</th>
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th">bias</th>
+<th data-quarto-table-cell-role="th">slope</th>
+<th data-quarto-table-cell-role="th">intercept</th>
+<th data-quarto-table-cell-role="th">r</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>air</td>
+<td>SP_01</td>
+<td>night, before 30 Sep</td>
+<td>322</td>
+<td>2.20</td>
+<td>0.93</td>
+<td>3.62</td>
+<td>0.94</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>air</td>
+<td>SP_01</td>
+<td>day, before 30 Sep</td>
+<td>400</td>
+<td>0.92</td>
+<td>0.70</td>
+<td>8.73</td>
+<td>0.77</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>air</td>
+<td>SP_01</td>
+<td>night, from 30 Sep</td>
+<td>393</td>
+<td>1.54</td>
+<td>0.85</td>
+<td>4.47</td>
+<td>0.87</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>air</td>
+<td>SP_01</td>
+<td>day, from 30 Sep</td>
+<td>438</td>
+<td>0.57</td>
+<td>0.56</td>
+<td>11.63</td>
+<td>0.76</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>air</td>
+<td>SP_02</td>
+<td>night, before 30 Sep</td>
+<td>280</td>
+<td>0.57</td>
+<td>0.97</td>
+<td>1.15</td>
+<td>0.91</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">5</th>
+<td>air</td>
+<td>SP_02</td>
+<td>day, before 30 Sep</td>
+<td>318</td>
+<td>0.20</td>
+<td>0.84</td>
+<td>4.28</td>
+<td>0.89</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">6</th>
+<td>air</td>
+<td>SP_02</td>
+<td>night, from 30 Sep</td>
+<td>394</td>
+<td>0.79</td>
+<td>0.99</td>
+<td>0.98</td>
+<td>0.87</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">7</th>
+<td>air</td>
+<td>SP_02</td>
+<td>day, from 30 Sep</td>
+<td>413</td>
+<td>1.17</td>
+<td>0.93</td>
+<td>2.88</td>
+<td>0.82</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">8</th>
+<td>air</td>
+<td>SP_03</td>
+<td>night, before 30 Sep</td>
+<td>271</td>
+<td>0.47</td>
+<td>0.92</td>
+<td>2.17</td>
+<td>0.89</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">9</th>
+<td>air</td>
+<td>SP_03</td>
+<td>day, before 30 Sep</td>
+<td>311</td>
+<td>0.90</td>
+<td>0.97</td>
+<td>1.64</td>
+<td>0.79</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">10</th>
+<td>air</td>
+<td>SP_03</td>
+<td>night, from 30 Sep</td>
+<td>394</td>
+<td>0.23</td>
+<td>0.94</td>
+<td>1.34</td>
+<td>0.90</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">11</th>
+<td>air</td>
+<td>SP_03</td>
+<td>day, from 30 Sep</td>
+<td>438</td>
+<td>0.71</td>
+<td>1.03</td>
+<td>-0.09</td>
+<td>0.88</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">12</th>
+<td>air</td>
+<td>SP_04</td>
+<td>night, before 30 Sep</td>
+<td>314</td>
+<td>-0.37</td>
+<td>0.90</td>
+<td>1.58</td>
+<td>0.92</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">13</th>
+<td>air</td>
+<td>SP_04</td>
+<td>day, before 30 Sep</td>
+<td>300</td>
+<td>-0.49</td>
+<td>0.80</td>
+<td>4.60</td>
+<td>0.76</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">14</th>
+<td>air</td>
+<td>SP_04</td>
+<td>night, from 30 Sep</td>
+<td>392</td>
+<td>0.03</td>
+<td>0.90</td>
+<td>1.98</td>
+<td>0.91</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">15</th>
+<td>air</td>
+<td>SP_04</td>
+<td>day, from 30 Sep</td>
+<td>436</td>
+<td>-0.71</td>
+<td>0.69</td>
+<td>7.10</td>
+<td>0.86</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="daily-fits" class="level2">
+<h2 class="anchored" data-anchor-id="daily-fits">Daily fits</h2>
+<p>A fit over several days averages away a change in how a plant follows its surroundings, and water stress is such a change. A leaf that transpires well warms more slowly than the air during the day. Its daytime slope against air is below 1. When its stomata close, the slope moves towards 1 and the intercept rises. At night the stomata are mostly closed. Night fits are then a reference for the same plant.</p>
+<p><code>peers</code> gives, for each node, the mean of the other nodes. It is a reference that needs no air sensor and that cancels the shared greenhouse climate, as long as most plants are not stressed.</p>
+<div id="f4d6380e" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.477405+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.479701+00:00&quot;,&quot;total&quot;:0.002298877999976412}}" data-execution_count="39">
+<hr>
+<section id="peers" class="level3">
+<h3 class="anchored" data-anchor-id="peers">peers</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb35"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> peers(</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>    w:pandas.DataFrame, <span class="co"># Output of `node_table`</span></span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># Same shape as `w`</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Mean of the other columns, for each column</em></p>
+</section>
+</div>
+<p><code>daily_fits</code> fits a line through each node against a reference, for each day and regime. The reference is one series shared by all nodes, such as air temperature, or a table with one column per node, such as the output of <code>peers</code>. A night takes the date of the evening it starts: the night of 5 October runs from sunset on 5 October to sunrise on 6 October. The bias is the mean of the node minus the reference, as in <code>pair_stats</code>. The intercept is the fitted value at a reference of 0, far outside the data, and it moves with the slope. The fit is ordinary least squares. Noise in the reference pulls the slope towards 0, more against <code>peers</code> than against air. This effect is about the same every day, and changes over days remain comparable.</p>
+<div id="796b36a4" class="cell" data-quarto-private-1="{&quot;key&quot;:&quot;execution&quot;,&quot;value&quot;:{&quot;iopub.execute_input&quot;:&quot;2026-10-09T13:24:07.481576+00:00&quot;,&quot;shell.execute_reply&quot;:&quot;2026-10-09T13:24:07.484862+00:00&quot;,&quot;total&quot;:0.003290403999983482}}" data-execution_count="41">
+<hr>
+<section id="daily_fits" class="level3">
+<h3 class="anchored" data-anchor-id="daily_fits">daily_fits</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> daily_fits(</span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>    w:pandas.DataFrame, <span class="co"># Output of `node_table`</span></span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>    x, <span class="co"># Reference: a series shared by all nodes, or a table with the columns of `w`</span></span>
+<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    min_n:<span class="bu">int</span><span class="op">=</span><span class="dv">24</span>, <span class="co"># Fewest points for a fit</span></span>
+<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>)<span class="op">-&gt;</span>pandas.DataFrame: <span class="co"># One row per node, day and regime</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><em>Bias, slope, intercept and correlation of each node against <code>x</code>, per day and regime</em></p>
+</section>
+</div>
+<p>A synthetic node that follows the air with a slope of 0.5 by day and 1 by night:</p>
+<div id="8cf8a3d7" class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>t <span class="op">=</span> pd.date_range(<span class="st">'2026-10-01'</span>, <span class="st">'2026-10-03'</span>, freq<span class="op">=</span><span class="st">'5min'</span>, inclusive<span class="op">=</span><span class="st">'left'</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a>air <span class="op">=</span> pd.Series(<span class="dv">15</span> <span class="op">+</span> <span class="dv">5</span> <span class="op">*</span> np.sin(<span class="dv">2</span> <span class="op">*</span> np.pi <span class="op">*</span> (t.hour <span class="op">+</span> t.minute <span class="op">/</span> <span class="dv">60</span> <span class="op">-</span> <span class="dv">9</span>) <span class="op">/</span> <span class="dv">24</span>), index<span class="op">=</span>t)</span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>w <span class="op">=</span> pd.DataFrame(<span class="bu">dict</span>(a<span class="op">=</span>np.where(is_day(t), <span class="fl">0.5</span> <span class="op">*</span> air <span class="op">+</span> <span class="dv">8</span>, air)), index<span class="op">=</span>t)</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>fits <span class="op">=</span> daily_fits(w, air)</span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>test_close(fits.slope.to_numpy(), np.where(fits.regime <span class="op">==</span> <span class="st">'day'</span>, <span class="fl">0.5</span>, <span class="fl">1.</span>))</span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>fits.<span class="bu">round</span>(<span class="bu">dict</span>(bias<span class="op">=</span><span class="dv">2</span>, slope<span class="op">=</span><span class="dv">2</span>, intercept<span class="op">=</span><span class="dv">2</span>, r<span class="op">=</span><span class="dv">2</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-display">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">node_id</th>
+<th data-quarto-table-cell-role="th">day</th>
+<th data-quarto-table-cell-role="th">regime</th>
+<th data-quarto-table-cell-role="th">n</th>
+<th data-quarto-table-cell-role="th">bias</th>
+<th data-quarto-table-cell-role="th">slope</th>
+<th data-quarto-table-cell-role="th">intercept</th>
+<th data-quarto-table-cell-role="th">r</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">0</th>
+<td>a</td>
+<td>2026-09-30</td>
+<td>night</td>
+<td>83</td>
+<td>0.00</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">1</th>
+<td>a</td>
+<td>2026-10-01</td>
+<td>day</td>
+<td>140</td>
+<td>-0.85</td>
+<td>0.5</td>
+<td>8.0</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">2</th>
+<td>a</td>
+<td>2026-10-01</td>
+<td>night</td>
+<td>148</td>
+<td>0.00</td>
+<td>1.0</td>
+<td>0.0</td>
+<td>1.0</td>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">3</th>
+<td>a</td>
+<td>2026-10-02</td>
+<td>day</td>
+<td>140</td>
+<td>-0.85</td>
+<td>0.5</td>
+<td>8.0</td>
+<td>1.0</td>
+</tr>
+<tr class="odd">
+<th data-quarto-table-cell-role="th">4</th>
+<td>a</td>
+<td>2026-10-02</td>
+<td>night</td>
+<td>65</td>
+<td>0.00</td>
+<td>1.0</td>
+<td>-0.0</td>
+<td>1.0</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const cellDetails = window.document.querySelectorAll(".cell details.code-fold");
+        for (let i=0; i<cellDetails.length; i++) {
+          const details = cellDetails[i];
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell div.sourceCode.cell-code");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/franckalbinet\.github\.io\/speaking-plants");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+<footer class="footer"><div class="nav-footer"><div class="nav-footer-center"><div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/franckalbinet/speaking-plants/issues/new" class="toc-action"><i class="bi bi-github"></i>Report an issue</a></li></ul></div></div></div></footer></body></html>
