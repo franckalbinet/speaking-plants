@@ -8,3 +8,7 @@ website:
           - 00_clean.ipynb
           - 01_leaf.ipynb
           - 02_environment.ipynb
+          - 03_logbook.ipynb
+      - section: "Batches"
+        contents:
+          - batches/b02/diagnosis.ipynb

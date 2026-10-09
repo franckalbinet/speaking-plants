@@ -1,0 +1,5 @@
+deployment_id,node_id,start,end,plant_id,site,camera,air_sensor,source,notes
+d01,SP_01,2026-09-23 11:58,,,Seibersdorf,,SP_01,inferred,"Inferred from the logs: start is the first log line. To record: plant, camera position, confirmed site."
+d02,SP_02,2026-09-23 11:49,,,Seibersdorf,,SP_01,inferred,"Inferred from the logs: start is the first log line. To record: plant, camera position, confirmed site."
+d03,SP_03,2026-09-23 11:42,,,Seibersdorf,,SP_01,inferred,"Inferred from the logs: start is the first log line. To record: plant, camera position, confirmed site."
+d04,SP_04,2026-09-23 11:37,,,Seibersdorf,,SP_01,inferred,"Inferred from the logs: start is the first log line. To record: plant, camera position, confirmed site."

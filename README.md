@@ -12,7 +12,8 @@ Four sensor nodes, `SP_01` to `SP_04`, each watch one plant in a greenhouse. Eve
 | Notebook | Module | What it does |
 |----|----|----|
 | [Clean](https://franckalbinet.github.io/speaking-plants/clean.html) | `speaking_plants.clean` | Reads the SD-card logs into one table, flags faulty values, combines each burst into one measurement, and shares the Ruuvi readings with every node. |
-| [Leaf temperature](https://franckalbinet.github.io/speaking-plants/leaf.html) | `speaking_plants.leaf` | Builds daily leaf temperature series per node, with or without a leaf mask, smoothed, as a slope, and as leaf minus air temperature. Splits time into day and night from sunrise and sunset. |
+| [Leaf temperature](https://franckalbinet.github.io/speaking-plants/leaf.html) | `speaking_plants.leaf` | Builds daily leaf temperature series per node, with or without a leaf mask, smoothed, as a slope, and as leaf minus air temperature. Splits time into day and night from sunrise and sunset. Shows where camera scenes change, and compares nodes with biases, fitted lines and scatter plots. |
+| [Logbook](https://franckalbinet.github.io/speaking-plants/logbook.html) | `speaking_plants.logbook` | Reads the deployment and event tables in `logbook/`, links logged rows to deployments and plants, and lists where the logbook and the logs disagree. |
 | [Environment](https://franckalbinet.github.io/speaking-plants/environment.html) | none | Plots air humidity and soil moisture over a batch, and compares soil drying with leaf temperature. |
 
 ## Install
@@ -25,14 +26,14 @@ pip install git+https://github.com/franckalbinet/speaking-plants.git
 
 ## How to use
 
-The CSV logs are not in the repository. Put them in a `data/` folder at the project root. This example runs from `nbs/`. It reads a batch of logs and returns one leaf temperature series per node and full day, without a leaf mask:
+The CSV logs are not in the repository. Put the logs of each batch in its own folder under `data/` at the project root, such as `data/b01/`. This example runs from `nbs/`. It reads batch 1 and returns one leaf temperature series per node and full day, without a leaf mask:
 
 ``` python
 from pathlib import Path
 from speaking_plants.clean import *
 from speaking_plants.leaf import *
 
-logs = sorted(Path('../data').glob('dados_*.csv'))
+logs = sorted(Path('../data/b01').glob('dados_*.csv'))
 mdf = share_ruuvi(measurements(clean(read_logs(logs))))
 days = full_days(mdf)
 ls = leaf_series(mdf, no_masks(days))

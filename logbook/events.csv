@@ -1,0 +1,11 @@
+time,node_id,event,source,notes
+2026-09-24 10:15,,visit,inferred,All nodes resumed logging between 10:08 and 10:19 after overnight outages.
+2026-09-24 14:00,,visit,inferred,"SP_04, SP_01 and SP_03 resumed logging at 13:17, 14:19 and 14:37 after short outages."
+2026-09-28 12:00,,visit,inferred,All nodes resumed logging between 09:14 (SP_01) and 15:39 (SP_02) after outages of 1 to 3 days.
+2026-09-30 13:43,,visit,inferred,All nodes resumed logging between 13:41 and 13:45 after morning outages. Camera scenes of all nodes changed on this day.
+2026-09-30 13:52,SP_04,watering,inferred,Soil moisture rose from 15.0 to 25.5 between two measurements.
+2026-10-05 08:20,,visit,inferred,SP_01 and SP_03 resumed logging at 08:21 and 08:20 after outages of more than 2 days.
+2026-10-05 17:00,,card collection,inferred,"Collection of batch b01, whose logs end between 16:45 and 16:50. Nodes resumed logging between 17:17 and 17:32."
+2026-10-07 10:45,SP_03,restart,inferred,Resumed logging after an outage from 04:40.
+2026-10-08 10:46,SP_04,restart,inferred,Resumed logging after an outage from 23:30 on 7 October.
+2026-10-09 11:00,,card collection,inferred,"Collection of batch b02, whose logs end between 11:00 and 11:07. The cards were not wiped: b02 repeats all of b01."
