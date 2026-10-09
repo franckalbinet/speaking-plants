@@ -29,8 +29,11 @@ layouts = {len(o): o for o in (raw_id_cols + common, raw_id_cols + ruuvi_cols + 
 
 # %% ../nbs/00_clean.ipynb #deb1fea8
 def _rows2df(rows, cols):
-    df = pd.DataFrame(rows, columns=cols).drop(columns=['date', 'time'])
-    return df.astype({c: int if c in ('measurement_id', 'frame', 'timestamp') else float for c in df.columns if c != 'node_id'})
+    a, n = np.array(rows), len(raw_id_cols)
+    ids = pd.DataFrame(dict(node_id=np.char.strip(a[:, 0]), time=pd.to_datetime(a[:, 3].astype(int), unit='s')))
+    ids[['measurement_id', 'frame', 'timestamp']] = a[:, 1:4].astype(int)
+    vals = pd.DataFrame(a[:, n:].astype(float), columns=cols[n:]).reindex(columns=ruuvi_cols + common)
+    return pd.concat([ids, vals], axis=1)[schema]
 
 def read_log(
     path, # CSV log written by one node
@@ -43,10 +46,7 @@ def read_log(
             fs = l.rstrip('\r\n').split(';' if ';' in l else ',')
             rows.setdefault(len(fs), []).append(fs)
     if unknown := set(rows) - set(layouts): raise ValueError(f'{path}: rows with {sorted(unknown)} fields match no known layout')
-    df = pd.concat([_rows2df(v, layouts[n]) for n,v in rows.items()])
-    df['node_id'] = df.node_id.str.strip()
-    df['time'] = pd.to_datetime(df.timestamp, unit='s')
-    df = df.reindex(columns=schema).replace(-999, np.nan)
+    df = pd.concat([_rows2df(v, layouts[n]) for n,v in rows.items()]).replace(-999, np.nan)
     return df.sort_values(['time', 'frame'], ignore_index=True)
 
 # %% ../nbs/00_clean.ipynb #99c306d0
